@@ -1,11 +1,19 @@
-import React, { useState } from 'react'
+import React, { useState , useEffect} from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { View, ActivityIndicator, Text, TextInput, Button } from 'react-native'
+import {
+  View,
+  ActivityIndicator,
+  Text,
+  TextInput,
+  Button,
+  ScrollView,
+} from 'react-native'
 import { Brand } from '@/Components'
 import { useTheme } from '@/Theme'
 import FetchOne from '@/Store/User/FetchOne'
 import { useTranslation } from 'react-i18next'
 import ChangeTheme from '@/Store/Theme/ChangeTheme'
+import ExampleReducer from '../../Store/Theme/ExampleReducer'
 
 const IndexExampleContainer = () => {
   const { t } = useTranslation()
@@ -17,9 +25,13 @@ const IndexExampleContainer = () => {
     (state) => state.user.fetchOne.loading,
   )
   const fetchOneUserError = useSelector((state) => state.user.fetchOne.error)
+  const fetchDeveloperName = useSelector((state)=>state.theme.myName)
+  
+  useEffect(()=>{
+    console.log('developer name',fetchDeveloperName)
+  },[])
 
   const [userId, setUserId] = useState('1')
-
   const fetch = (id) => {
     setUserId(id)
     dispatch(FetchOne.action(id))
@@ -27,6 +39,10 @@ const IndexExampleContainer = () => {
 
   const changeTheme = ({ theme, darkMode }) => {
     dispatch(ChangeTheme.action({ theme, darkMode }))
+  }
+  const exampleDispatch = ({ theme }) => {
+    let myName = 'Minura wijesinghe'
+    dispatch(ExampleReducer.action({ theme, myName }))
   }
 
   return (
@@ -37,7 +53,9 @@ const IndexExampleContainer = () => {
         {fetchOneUserError ? (
           <Text style={Fonts.textRegular}>{fetchOneUserError.message}</Text>
         ) : (
-          <Text style={Fonts.textRegular}>{t('example.helloUser', { name: user.name })}</Text>
+          <Text style={Fonts.textRegular}>
+            {t('example.helloUser', { name: user.name })}
+          </Text>
         )}
       </View>
       <View
@@ -66,6 +84,10 @@ const IndexExampleContainer = () => {
       <Button onPress={() => changeTheme({ darkMode: null })} title="Auto" />
       <Button onPress={() => changeTheme({ darkMode: true })} title="Dark" />
       <Button onPress={() => changeTheme({ darkMode: false })} title="Light" />
+      <Button
+        onPress={() => exampleDispatch({ darkMode: null })}
+        title="example dispatch"
+      />
     </View>
   )
 }
